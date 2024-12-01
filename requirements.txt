@@ -1,0 +1,4 @@
+spotipy==2.24.0
+yt-dlp==2024.11.18
+halo==0.0.31
+ytmusicapi==1.8.2
