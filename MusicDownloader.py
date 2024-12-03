@@ -86,10 +86,29 @@ def download_spotify_track(url, folder):
     download_youtube_audio(youtube_url, folder)
     spinner.stop()
 
-def download_spotify_playlist(url):
-    playlist = sp.playlist(url)
-    tracks = playlist["tracks"]["items"]
+def fetch_spotify_playlist_tracks(id):
+    playlist = sp.playlist(id)
+    tracks = playlist['tracks']['items']
 
+    if playlist['tracks']['total'] > 100:
+        offset = 0
+        total = playlist['tracks']['total']
+
+        while offset < total:
+            tracks.extend(sp.playlist_items(id, None, 100, offset))
+
+            offset += 100
+
+    return tracks
+
+def download_spotify_playlist(url):
+    spinner = Halo(text='Fetching Playlist', spinner='dots')
+    spinner.start()
+
+    playlist = sp.playlist(url)
+    tracks = fetch_spotify_playlist_tracks(playlist['id'])
+
+    spinner.stop()
     print("Playlist: %s\n%d tracks\n" % (playlist["name"], len(tracks)))
 
     for i in range(len(tracks)):
